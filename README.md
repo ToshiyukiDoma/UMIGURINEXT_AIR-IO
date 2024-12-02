@@ -20,6 +20,11 @@ DI pins -> Arduino D11 and D12
 12V pins -> 12V supply
 GND -> ground
 ```
+See also: https://rhythm-cons.wiki/controllers/chunithm/chunithm-air-strings/
+
 2. Write `iofw.ino` to arduino.
 3. Open UMIGURI config, Set COM port num that your arduino is recognized.
 4. Done.
+
+## License
+MIT License

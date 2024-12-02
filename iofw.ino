@@ -1,3 +1,7 @@
+// Copyright (c) 2024 inonote
+// Use of this source code is governed by the MIT License
+// that can be found at https://github.com/inonote/umgrio/blob/main/LICENSE
+
 #include <Adafruit_NeoPixel.h>
 
 typedef unsigned char uchar;
