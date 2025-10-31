@@ -2,13 +2,12 @@
 IO board for AIR-STRINGS. Modified for my air-string setup.
 
 ## Requires
-- Arduino
+- Arduino Pro Micro ATMEGA32u4 chip
 - USB-A cable
 - PCB
 - AIR-STRINGS
 - 5V supply
 - 12V supply
-- Pro Micro ATMEGA32u4 chip
 
 ## Usage
 1. Connect pins of AIR-STRINGS to the other side of the pair, arduino and power supplies.
@@ -28,5 +27,6 @@ See also: https://rhythm-cons.wiki/controllers/chunithm/chunithm-air-strings/
 
 ## License
 MIT License
+
 
 
