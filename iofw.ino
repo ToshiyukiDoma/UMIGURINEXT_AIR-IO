@@ -6,8 +6,8 @@
 
 typedef unsigned char uchar;
 
-Adafruit_NeoPixel LED1 = Adafruit_NeoPixel(3, 12, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel LED2 = Adafruit_NeoPixel(3, 11, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel LED1 = Adafruit_NeoPixel(3, 5, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel LED2 = Adafruit_NeoPixel(3, 6, NEO_GRB + NEO_KHZ800);
 
 #define SLIDER_COMMAND_SLIDER_REPORT        0x01
 #define SLIDER_COMMAND_LED_BRIGHTNESS       0x02
@@ -40,12 +40,12 @@ void setup() {
   LED1.show();
   LED2.show();
   Serial.begin(115200);
-  pinMode(A0, INPUT_PULLUP);
-  pinMode(A1, INPUT_PULLUP);
-  pinMode(A2, INPUT_PULLUP);
-  pinMode(A3, INPUT_PULLUP);
-  pinMode(A4, INPUT_PULLUP);
-  pinMode(A5, INPUT_PULLUP);
+   pinMode(8, INPUT_PULLUP);
+   pinMode(9, INPUT_PULLUP);
+   pinMode(10, INPUT_PULLUP);
+   pinMode(18, INPUT_PULLUP);
+   pinMode(19, INPUT_PULLUP);
+   pinMode(20, INPUT_PULLUP);
 
   onReset();
 }
@@ -198,3 +198,4 @@ uchar calcCheckSum(uchar frame[], int frameLength) {
     sum -= frame[i];
   return (sum - 0xFF) & 0xFF;
 }
+
