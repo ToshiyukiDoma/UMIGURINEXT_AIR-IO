@@ -8,14 +8,14 @@ IO board for AIR-STRINGS. Modified for my air-string setup.
 - AIR-STRINGS
 - 5V supply
 - 12V supply
-- Small stuff that need for electronics
+- Pro Micro ATMEGA32u4 chip
 
 ## Usage
 1. Connect pins of AIR-STRINGS to the other side of the pair, arduino and power supplies.
 ```
-6 OUT pins -> Arduino A0 - A5
+6 OUT pins -> Arduino 8,9,10,18,19,20
 TWR pins -> the opposite side of TWR pins
-DI pins -> Arduino D11 and D12
+DI pins -> Pinout 5 and 6
 5V pins -> 5V supply
 12V pins -> 12V supply
 GND -> ground
@@ -28,4 +28,5 @@ See also: https://rhythm-cons.wiki/controllers/chunithm/chunithm-air-strings/
 
 ## License
 MIT License
+
 
