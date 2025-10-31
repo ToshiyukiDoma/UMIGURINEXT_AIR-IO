@@ -1,5 +1,5 @@
 # UMIGURI IO Firmware
-IO board for AIR-STRINGS.
+IO board for AIR-STRINGS. Modified for my air-string setup.
 
 ## Requires
 - Arduino
@@ -28,3 +28,4 @@ See also: https://rhythm-cons.wiki/controllers/chunithm/chunithm-air-strings/
 
 ## License
 MIT License
+
