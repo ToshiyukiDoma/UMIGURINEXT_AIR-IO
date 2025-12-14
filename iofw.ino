@@ -6,8 +6,10 @@
 
 typedef unsigned char uchar;
 
+///// this is where you change your LED shit lol
+
 Adafruit_NeoPixel LED1 = Adafruit_NeoPixel(3, 5, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel LED2 = Adafruit_NeoPixel(3, 6, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel LED2 = Adafruit_NeoPixel(3, 6 , NEO_GRB + NEO_KHZ800);
 
 #define SLIDER_COMMAND_SLIDER_REPORT        0x01
 #define SLIDER_COMMAND_LED_BRIGHTNESS       0x02
@@ -25,6 +27,20 @@ Adafruit_NeoPixel LED2 = Adafruit_NeoPixel(3, 6, NEO_GRB + NEO_KHZ800);
 #define JVS_SYN 0xE0
 #define JVS_ESC 0xD0
 
+// COnfigure your wiring based on your setup whatever. lmao
+//
+// Example (original order):
+//   A0, A1, A2, A3, A4, A5
+//
+// Example (swapped order because I am stupid with wiring lmao):
+//   A3, A4, A5, A0, A1, A3
+
+const uint8_t sliderPins[6] = {
+18, 19, 20, 8, 9, 10
+};
+
+// ================================
+
 // 受信データバッファ
 uchar receivedBuf[0xFE];
 int receivedBufLength = 0;
@@ -39,13 +55,13 @@ void setup() {
   LED2.begin();
   LED1.show();
   LED2.show();
+
   Serial.begin(115200);
-   pinMode(8, INPUT_PULLUP);
-   pinMode(9, INPUT_PULLUP);
-   pinMode(10, INPUT_PULLUP);
-   pinMode(18, INPUT_PULLUP);
-   pinMode(19, INPUT_PULLUP);
-   pinMode(20, INPUT_PULLUP);
+
+  // Initialize slider pins
+  for (int i = 0; i < 6; ++i) {
+    pinMode(sliderPins[i], INPUT_PULLUP);
+  }
 
   onReset();
 }
@@ -60,12 +76,13 @@ void loop() {
     frame[2] = 2;
     frame[3] = 0;
     frame[4] = 0;
-    
-    for(int i = 0; i < 6; ++i) {
-      frame[4] |= analogRead(i) > 40;
+
+    // Read sliders in the exact order defined in sliderPins[]
+    for (int i = 0; i < 6; ++i) {
+      frame[4] |= (analogRead(sliderPins[i]) > 40);
       frame[4] <<= 1;
     }
-   
+
     sendData(frame, sizeof(frame) / sizeof(frame[0]));
   }
 
@@ -74,38 +91,47 @@ void loop() {
   }
   if (ignoredTimer < 281)
     ++ignoredTimer;
+
   delay(16);
 }
 
 void onData() {
   if (receivedBufLength < 4)
     return;
-  
-  switch(receivedBuf[1]) {
+
+  switch (receivedBuf[1]) {
     case SLIDER_COMMAND_SUBSCRIBE_SLIDER:
       subscribed = true;
       break;
+
     case SLIDER_COMMAND_UNSUBSCRIBE_SLIDER:
       subscribed = false;
       break;
-    
-    // 色設定
+
     case SLIDER_COMMAND_LED_BRIGHTNESS:
       if (receivedBufLength < 4 + 19)
         break;
       ignoredTimer = 0;
       LED1.setBrightness(receivedBuf[3]);
       LED2.setBrightness(receivedBuf[3]);
-      for(int i = 0; i < 3; ++i) {      
-          LED1.setPixelColor(i, receivedBuf[4 + i * 3 + 2], receivedBuf[4 + i * 3 + 1], receivedBuf[4 + i * 3]);
+      for (int i = 0; i < 3; ++i) {
+        LED1.setPixelColor(i,
+          receivedBuf[4 + i * 3 + 2],
+          receivedBuf[4 + i * 3 + 1],
+          receivedBuf[4 + i * 3]
+        );
       }
-      for(int i = 3; i < 6; ++i) {      
-          LED2.setPixelColor(i - 3, receivedBuf[4 + i * 3 + 2], receivedBuf[4 + i * 3 + 1], receivedBuf[4 + i * 3]);
+      for (int i = 3; i < 6; ++i) {
+        LED2.setPixelColor(i - 3,
+          receivedBuf[4 + i * 3 + 2],
+          receivedBuf[4 + i * 3 + 1],
+          receivedBuf[4 + i * 3]
+        );
       }
       LED1.show();
       LED2.show();
       break;
-    
+
     case SLIDER_COMMAND_RESET:
       onReset();
       {
@@ -116,7 +142,7 @@ void onData() {
         sendData(frame, sizeof(frame) / sizeof(frame[0]));
       }
       break;
-    
+
     case SLIDER_COMMAND_BOARD_INFO:
       {
         uchar frame[21];
@@ -144,7 +170,7 @@ void onReset() {
 }
 
 void recieveData() {
-  while(Serial.available() > 0) {
+  while (Serial.available() > 0) {
     int rawByte = Serial.read();
     if (rawByte == JVS_SYN) {
       if (receivedBufLength > 0 && !receivedBufInvalid)
@@ -162,7 +188,7 @@ void recieveData() {
       }
     }
   }
-  
+
   if (receivedBufLength >= 4 && receivedBuf[2] == receivedBufLength - 4 && !receivedBufInvalid) {
     onData();
     receivedBufLength = 0;
@@ -172,13 +198,12 @@ void recieveData() {
 
 void sendData(uchar frame[], int frameLength) {
   uchar sum = JVS_SYN;
-  for(int i = 0; i < frameLength; ++i) {
+  for (int i = 0; i < frameLength; ++i) {
     sum -= frame[i];
     if (i && (frame[i] == JVS_SYN || frame[i] == JVS_ESC)) {
       Serial.write(JVS_ESC);
       Serial.write(frame[i] - 1);
-    }
-    else {
+    } else {
       Serial.write(frame[i]);
     }
   }
@@ -186,16 +211,14 @@ void sendData(uchar frame[], int frameLength) {
   if (sum == JVS_SYN || sum == JVS_ESC) {
     Serial.write(JVS_ESC);
     Serial.write(sum - 1);
-  }
-  else {
+  } else {
     Serial.write(sum);
   }
 }
 
 uchar calcCheckSum(uchar frame[], int frameLength) {
   int sum = JVS_SYN;
-  for(int i = 0; i < frameLength; ++i)
+  for (int i = 0; i < frameLength; ++i)
     sum -= frame[i];
   return (sum - 0xFF) & 0xFF;
 }
-
